@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
 import discord
-import json
-import random
-import re
-import datetime
-from time import sleep
 from discord.ext import commands
 
 import interface as itf
@@ -26,14 +21,14 @@ bot = commands.Bot(command_prefix='!')
 
 @bot.event
 async def on_ready():
-    print("Bot de test connecté")
+    print("CoroBot connecté")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!coro help"))
 
 @bot.command(hidden=True)
 async def exit(ctx):
     if ctx.author.id == 404395089389944832 :
         await ctx.send("Fermeture du CoroBot...")
-        print("bot de testing fermé avec succès")
+        print("CoroBot fermé avec succès")
         await bot.close()
     else :
         await ctx.send("nope")
@@ -75,7 +70,9 @@ async def coro_error(ctx, error):
     if isinstance(error, commands.errors.CommandOnCooldown) :
         await ctx.send(f"Minute papillon, laisses moi quelques secondes ! :rage: {ctx.author.mention}")
     else :
-        MYSELF = bot.get_user(404395089389944832)
+        with open("id.txt", "r") as idtxt :
+            id = int(idtxt.read())
+        MYSELF = bot.get_user(id)
         await MYSELF.send(f"Une erreur non anticipée est advenue : \n'{error}'\n\
 Serv : {ctx.guild.name}\n\
 Salon : {ctx.channel.mention}")
