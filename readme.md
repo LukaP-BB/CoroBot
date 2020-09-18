@@ -5,15 +5,17 @@ The data is available [here](https://www.data.gouv.fr/fr/datasets/donnees-hospit
 ## What does it do ?
 Discord users can type in the chat things such as :
 ```    
-    +Coro Indre 01-08-2020 01-09-2020
-    +Coro Indre 01-08-2020
-    +Coro 36 hosp
-    +Coro Île-de-France
-    +Coro help
-    +Coro dep
+    !Coro Indre 01-08-2020 01-09-2020
+    !Coro Indre 01-08-2020
+    !Coro 36 hosp
+    !Coro Île-de-France
+    !Coro help
+    !Coro dep
 ```
 And the bot will generate a matplotlib figure, then send it in a nice embed.
 ![Example](https://github.com/LukaP-BB/CoroBot/blob/master/images/Capture.PNG)
+
+
 I tried to make the argument parsing as user-friendly as possible :
 - the arguments can be given in any order
 - the departments can be given by their code or their name
@@ -25,8 +27,9 @@ I tried to make the argument parsing as user-friendly as possible :
     - dc : sum of deceded people
 
 ## Wanna use it ?
-Feel free to use this code and host this bot wherever you want. Just send me a little message if you do, It would make my day.
+Feel free to use this code and host this bot wherever you want. Just send me a little message if you do, it would make my day.
 ```
 git pull https://github.com/LukaP-BB/CoroBot.git
 pip install -r requirements.txt
+./bot.py
 ```
