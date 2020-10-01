@@ -1,4 +1,5 @@
 __pycache__/
+*.pyc
 id.txt
 token.txt
 stylesExemples
