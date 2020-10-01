@@ -1,4 +1,5 @@
 id.txt
 token.txt
 stylesExemples
-.vscode
+*vscode
+__pycache__
