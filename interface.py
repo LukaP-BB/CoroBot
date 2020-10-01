@@ -23,10 +23,12 @@ help_message = """
 ```
 Exemples :
     $coro
-    $coro 44
-    $coro 75 hosp
-    $coro dc rad
-    $coro 10-07-2020
+    $coro plot 44
+    $coro plot 75 hosp
+    $coro plot dc rad
+    $coro plot 10-07-2020
+    $coro carte hospi
+    $coro carte tests 90 5
     $coro help
     $coro dep
 
@@ -43,7 +45,9 @@ Un certain nombre d'arguments sont acceptés, et le bot fera de son mieux pour l
     - help : affiche ce message
     - dep : envoie en DM la liste des départements acceptés (leur code et leur nom)
 
-Source des données : https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/#_
+Source des données : 
+https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/#_
+https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-resultats-des-tests-virologiques-covid-19/
 ```"""
 
 def loadDeps():

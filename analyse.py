@@ -69,17 +69,9 @@ def loadData():
 
 
 if __name__ == '__main__':
-    # print(plt.style.available)
-    # data = pd.read_csv("data.csv", delimiter=";")
     t1 = datetime.datetime.now()
     # loadFromUrl()
     df = loadData()
     df = france(df)
     print(df)
     print(datetime.datetime.now()-t1)
-    # df = france(data)
-    # df2 = parDep(data, 44)
-    # timeFrame(df2)
-    # print(df2)
-    # plotThat(df)
-    # plotThat(df2)
