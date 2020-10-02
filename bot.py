@@ -49,18 +49,33 @@ async def help(ctx):
 @coro.command()
 async def plot(ctx, *args):
     args = itf.parseArgs(args)
-    async with ctx.channel.typing():
-        infos = itf.plotFromArgs(args)
-        file = discord.File("fig.jpg")
-        embed = discord.Embed(
-            title=infos["Titre"],
-            description=infos["Description"],
-            colour=discord.Colour.magenta())
-        embed.set_image(url="attachment://fig.jpg")
-        if len(infos["Erreurs"]) > 0 :
-            for info in infos["Erreurs"] :
-                embed.add_field(name="Information : ", value=info)
-        await ctx.send(file=file, embed=embed)
+    # print(args)
+    file = discord.File("fig.jpg")
+    if args["type"] == "hospi" :
+        async with ctx.channel.typing():
+            infos = itf.plotFromArgs(args)
+            embed = discord.Embed(
+                title=infos["Titre"],
+                description=infos["Description"],
+                colour=discord.Colour.magenta())
+            embed.set_image(url="attachment://fig.jpg")
+            if len(infos["Erreurs"]) > 0 :
+                for info in infos["Erreurs"] :
+                    embed.add_field(name="Information : ", value=info)
+            await ctx.send(file=file, embed=embed)
+    elif args["type"] == "tests" :
+        if args["dep"] == "FR" :
+            await ctx.send("Il faut spécifier un département (pour l'instant)")
+        else :
+            async with ctx.channel.typing():
+                dep, d1, d2 = geo.plotGivenDep(dep=args["dep"], params=args, d1=args["d1"], d2=args["d2"])
+                embed = discord.Embed(
+                    title=f"Courbe des dépistages positifs : {dep}",
+                    description=f"Entre le {d1} et le {d2}\nMoyenne flottante sur 15 jours",
+                    colour=discord.Colour.magenta())
+                embed.set_image(url="attachment://fig.jpg")
+                await ctx.send(file=file, embed=embed)
+            
 @plot.error
 async def plot_error(ctx, error):
     if isinstance(error, commands.errors.CommandInvokeError):
@@ -77,19 +92,22 @@ async def dep(ctx, *args):
 async def carte(ctx, typeD=None, days=40, fmean=15):
     if typeD not in ["tests", "hospi"] :
         await ctx.send("Il faut donner un type de données : `!coro carte tests` pour les données de dépistage et `!coro carte hospi`pour les données hospitalières")
-    elif typeD == "tests" :
-        df = geo.donnesDepistage(days=days, floatingMean=fmean)
     else :
-        df = geo.donnesHosp(days=days, floatingMean=fmean)
-    async with ctx.channel.typing():
-        geo.mapDepInfection(df)
-        file = discord.File("fig.jpg")
-        embed = discord.Embed(
-            title="Progression du Covid",
-            description=f"Départements ou le Covid progresse le plus vite.\nDepuis {days} jours \nMoyenne flottante sur {fmean} jours",
-            colour=discord.Colour.magenta())
-        embed.set_image(url="attachment://fig.jpg")
-        await ctx.send(file=file, embed=embed)
+        async with ctx.channel.typing():
+            if typeD == "tests" :
+                df = geo.donnesDepistage(days=days, floatingMean=fmean)
+                typeD = "taux de tests positifs"
+            else :
+                df = geo.donnesHosp(days=days, floatingMean=fmean)
+                typeD = "nombre de décès répertoriés (données hospitalières)"
+            geo.mapDepInfection(df)
+            file = discord.File("fig.jpg")
+            embed = discord.Embed(
+                title=f"Progression du Covid : augmentation du {typeD}",
+                description=f"Départements ou le Covid progresse le plus vite depuis {days} jours. \nMoyenne flottante sur {fmean} jours",
+                colour=discord.Colour.magenta())
+            embed.set_image(url="attachment://fig.jpg")
+            await ctx.send(file=file, embed=embed)
 
 @coro.error
 async def coro_error(ctx, error):

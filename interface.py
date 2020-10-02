@@ -126,12 +126,15 @@ def sortDataType(params, args):
 def parseArgs(args):
     """Parse the arguments givent to the command and returns a comprehensive dict"""
     params = {
-        "type" : "plot",
+        "type" : "hospi",
         "dep" : None,
         "d1" : None,
         "d2" : None,
         "err" : [],
     }
+    if "tests" in args :
+        params["type"] = "tests"
+
     if "dep" in args or "départements" in args :
         params["type"] = "dep"
     elif "help" in args :

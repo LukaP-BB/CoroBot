@@ -13,6 +13,8 @@ import datetime as dtt
 
 from io import StringIO
 
+# plt.style.use('Solarize_Light2')
+
 # a dict to format the dataframes
 types = {
     "dep" : str,
@@ -140,38 +142,39 @@ def setAgeClass(df, age):
     df = df[df.cl_age90 == int(age)]
     return df
 
-def plotGivenDep(dep:str, days:int=40, floatingMean=15):
-    today = dtt.date.today()
-    firsDay = dtt.timedelta(days=days)
-    firsDay = today - firsDay
-    df = loadFromUrl()
+def plotGivenDep(dep:str, days:int=40, floatingMean=15, params=None, d1=None, d2=None):
+    if params == None :
+        return False
+    else : 
+        if d2 == None :
+            d2 = dtt.date.today()
+        if d1 == None :
+            d1 = dtt.timedelta(days=days)
+            d1 = d2 - d1
+        df = loadFromUrl(urlDepistQuot)
 
-    # df = loadDf2()
+        df = setAgeClass(df, "0")
+        df = timeFrame(df, d1, d2)
+        df = df[df.dep == str(dep)]
 
-    df = setAgeClass(df, "0")
-    df = timeFrame(df, firsDay.isoformat(), today.isoformat())
-    df = df[df.dep == str(dep)]
+        nb_jours = range(df.count().jour)
+        taux = df.P/pd.to_numeric(list(df.T))
+        taux = taux.rolling(window=floatingMean, min_periods=1).mean()
+        slope, intercept, rvalue, pvalue, stderr = stats.linregress(nb_jours, taux)
 
-    # print(df)
+        fig, ax = plt.subplots()
+        ax.plot(df.jour, taux, label="Taux de tests positifs")
+        if rvalue >= 0.9 :
+            ax.plot(nb_jours,
+                nb_jours*slope + intercept,
+                label=f"Pente : {round(slope, 5)} /jour\nrvalue : {round(rvalue, 2)}")
 
-    nb_jours = range(df.count().jour)
-    taux = df.P/pd.to_numeric(list(df.T))
-    taux = taux.rolling(window=floatingMean, min_periods=1).mean()
-    slope, intercept, rvalue, pvalue, stderr = stats.linregress(nb_jours, taux)
-
-    fig, ax = plt.subplots()
-    ax.plot(df.jour, taux, label="Taux de tests positifs")
-
-    ax.plot(nb_jours,
-        nb_jours*slope + intercept,
-        label=f"Pente : {round(slope, 5)} /jour\n\
-rvalue : {round(rvalue, 2)}")
-
-    ax.legend()
-    ax.xaxis.set_major_locator(plt.MaxNLocator(5))
-    ax.yaxis.set_major_locator(plt.MaxNLocator(10))
-    plt.title(f"Evolution des taux de dépistages positifs : {depFromCode(dep)}")
-    plt.savefig("fig.jpg")
+        ax.legend()
+        ax.xaxis.set_major_locator(plt.MaxNLocator(5))
+        ax.yaxis.set_major_locator(plt.MaxNLocator(10))
+        plt.title(f"Evolution des taux de dépistages positifs : {depFromCode(dep)}")
+        plt.savefig("fig.jpg")
+        return depFromCode(dep), d1, d2
 
 if __name__ == '__main__':
     df = donnesHosp(days=90, floatingMean= 7)
